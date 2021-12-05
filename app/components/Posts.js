@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { useState } from 'react'
 import { fetchPosts } from '../utils/api'
 
 
@@ -9,7 +10,7 @@ function PostsList({ posts }) {
         const { postID, postHeader, userName, fullName, likes, comments, mediaUrl, active, published } = post
 
         return (
-          <li key={postID} className='post small'>
+          <div key={postID} className='post'>
             <h3>Name: {fullName}</h3>
             <h2>Post Title: {postHeader}</h2>
             <img src={mediaUrl} alt={`Image for ${userName}`} />
@@ -18,11 +19,76 @@ function PostsList({ posts }) {
             <h4>Username: {userName}</h4>
             <button>{active === true ? "Active" : "Inactive"}</button>
             <button>{published === true ? "Published" : "Unpublished"}</button>
-          </li>
+          </div>
         )
+
 
       })}
     </ul>
+  )
+}
+
+function Pagination({ data, RenderComponent, title, pageLimit, dataLimit }) {
+  const [pages] = useState(Math.round(data.length / dataLimit))
+  const [currentPage, setCurrentPage] = useState(1)
+
+  function goToNextPage() {
+    setCurrentPage((page) => page + 1)
+  }
+
+  function goToPreviousPage() {
+    setCurrentPage((page) => page - 1)
+  }
+
+  function changePage(event) {
+    const pageNumber = Number(event.target.textContent);
+    setCurrentPage(pageNumber)
+  }
+
+  const getPaginatedData = () => {
+    const startIndex = currentPage * dataLimit - dataLimit
+    const endIndex = startIndex + dataLimit
+    return data.slice(startIndex, endIndex)
+  }
+
+  const getPaginationGroup = () => {
+    let start = Math.floor((currentPage - 1) / pageLimit) * pageLimit
+    return new Array(pageLimit).fill().map((_, idx) => start + idx + 1)
+  }
+
+  return (
+    <div>
+      <h1>{title}</h1>
+      <div className="dataContainer">
+        <RenderComponent posts={getPaginatedData()} />
+      </div>
+
+      <div className="pagination">
+        <button
+          onClick={goToPreviousPage}
+          className={`prev ${currentPage === 1 ? 'disabled' : ''}`}
+        >
+          prev
+        </button>
+
+        {getPaginationGroup().map((item, index) => (
+          <button
+            key={index}
+            onClick={changePage}
+            className={`paginationItem ${currentPage === item ? 'active' : null}`}
+          >
+            <span>{item}</span>
+          </button>
+        ))}
+
+        <button
+          onClick={goToNextPage}
+          className={`next ${currentPage === pages ? 'disabled' : ''}`}
+        >
+          next
+        </button>
+      </div>
+    </div>
   )
 }
 
@@ -64,10 +130,20 @@ export default class Posts extends React.Component {
           Posts
         </button>
         <button
-        onClick={()=>this.handleReset()}>
+          onClick={() => this.handleReset()}>
           Reset
         </button>
-        {posts && <PostsList posts={posts} />}
+        {posts && (
+          <>
+            <Pagination
+              data={posts}
+              RenderComponent={PostsList}
+              title="Posts"
+              pageLimit={3}
+              dataLimit={1}
+            />
+          </>
+        )}
       </React.Fragment>
     )
   }
