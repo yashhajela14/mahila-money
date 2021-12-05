@@ -9,7 +9,7 @@ function PostsList({ posts }) {
         const { postID, postHeader, userName, fullName, likes, comments, mediaUrl, active, published } = post
 
         return (
-          <li key={postID}>
+          <li key={postID} className='post small'>
             <h3>Name: {fullName}</h3>
             <h2>Post Title: {postHeader}</h2>
             <img src={mediaUrl} alt={`Image for ${userName}`} />
@@ -63,11 +63,11 @@ export default class Posts extends React.Component {
           onClick={() => this.getPosts()}>
           Posts
         </button>
-        {posts && <PostsList posts={posts} />}
         <button
         onClick={()=>this.handleReset()}>
           Reset
         </button>
+        {posts && <PostsList posts={posts} />}
       </React.Fragment>
     )
   }
