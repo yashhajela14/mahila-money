@@ -120,27 +120,18 @@ export default class Posts extends React.Component {
   render() {
     const posts = this.state.posts
 
+    this.getPosts()
 
     return (
       <React.Fragment>
-        <button
-          className='btn-clear nav-link'
-          style={0 === 1 ? { color: 'rgb(187, 46, 31)' } : null}
-          onClick={() => this.getPosts()}>
-          Posts
-        </button>
-        <button
-          onClick={() => this.handleReset()}>
-          Reset
-        </button>
         {posts && (
           <>
             <Pagination
               data={posts}
               RenderComponent={PostsList}
               title="Posts"
-              pageLimit={3}
-              dataLimit={1}
+              pageLimit={2}
+              dataLimit={2}
             />
           </>
         )}
